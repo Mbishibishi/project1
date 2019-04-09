@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>{{topTitle}}</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" integrity="sha384-wvfXpqpZZVQGK6TAh5PVlGOfQNHSoD2xbE+QkPxCAFlNEevoEH3Sl0sibVcOQVnN" crossorigin="anonymous">
+        
+        <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+        <link rel= "stylesheet" type="text/css" href="{{url_for('static', filename='styles.css')}}">
+
+        
+        <script>
+            
+            function myFunction(id, show='null') {
+                var x = document.getElementById(id);
+                var y = document.getElementById(show);                
+                if (x.style.display === "none") {
+                  x.style.display = "block";
+                  y.style.display = "none";
+                } else {
+                  x.style.display = "none";
+                  y.style.display = "block";
+                }
+              }
+        </script>
+    </head>
+    <body style="margin: 0px 0px 0px 0px;">
+        <div class= "contains">
+            <div class="mainCont">
+                <header>
+                 
+                    <div class="dropdown">
+                        <button class="dropbtn">Menu</button>
+                        <div class="dropdown-content">
+                            <a href="{{url_for('index')}}">Home</a>
+                            <a href="{{url_for('about')}}">Home</a>
+                            <a href="{{url_for('about')}}">Home</a>
+                            
+                        </div>
+                    </div>
+                    <div id = "userName">
+                        {% if name %}
+                            <div class="dropdown show">
+                                <a class="btn btn-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        {{name}}
+                                </a>
+                                  
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                    <a class="dropdown-item" href="{{url_for('logout')}}">Log out</a>
+                                </div>
+                            </div>
+
+                        {% endif %}
+                       
+                        
+                    </div>
+                   
+                    <div id = "logo">yourBoocs.</div> 
+                </header>
+                    <div>
+                        {% with alerts = get_flashed_messages(with_categories=true) %}
+                        {% if alerts %}
+                            {% for categ, alert in alerts%}
+                                <div class="alert alert-{{ categ }}"> {{ alert }}</div>
+                            {% endfor%}    
+                        {% endif %}
+                    {% endwith %}    
+                  </div>
+                
+               {% block content %}
+                {% endblock %}
+                      
+                
+        
+            </div>
+        </div>
+        <footer>
+            <div>
+                <ul>
+                    <li><a href="{{url_for('index')}}" style="color:black">Home</a></li>
+                    <li><a href="{{url_for('about')}}" style="color:black">Contact</a></li>
+                    <li><a href="{{url_for('about')}}" style="color:black">About</a></li>
+                </ul>    
+            </div>
+        </footer>
+    </body>
+</html>

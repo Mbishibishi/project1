@@ -1,0 +1,128 @@
+        {% extends 'layout.html' %}    
+            {% block content %}
+            <form id="search-engine" class = 'search-engine' action="{{url_for('matching_books')}}" methods= 'GET' >
+                    <div row>
+                        <div class="col-12" style="padding-top:9px">
+                            <div class="input-group">
+                            {{form.books(class="form-control", placeholder="Author/Book/ISBN")}}
+                                <span class="input-group-btn" style="padding-left:2px; width:50%">
+                                    
+                                    {{form.search(class="btn btn-default")}}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </form>   
+                <section id="upper">
+                    <div class="row">
+                        <div class="col-12">
+                            <h3>{{book.getBookName()}} by {{book.getBookAuthor()}}</h3>
+                            <div class="row">
+                                <div class="col-sm-8 col-md-2 col-lg-2">
+                                    <figure>
+                                        <img src="{{book.getBookImage()}}" alt="book's cover image">
+                                        <figcaption>Published in {{book.getReleaseYear()}}</figcaption>
+                                    </figure>
+                                </div>
+                                <div class="col-sm-12 col-md-10 col-lg-10">
+                                    <p>{{book.getBookDescription() | safe}}</p>
+                                    <ul id="addInfo">
+                                        <li><span class="var">ISBN:</span> {{book.getBookIsbn()}}</li>
+                                        <li><span class="var">Goodreads' number of ratings:</span> {{book.getRating_counts()}}</li>
+                                        <li><span class="var">Goodreads' average rating:</span> {{book.getAvg_rating()}}/5</li>
+                                        <li><span class="var">yourBoocs' number of ratings:</span> {{totalrates}}</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </section>
+                <div class="comment_section">
+                    <div id= "rateAndReview" class="rateAndReview">        
+                        <button style="border:none; color:dodgerblue" onclick="myFunction('subs')"><u> Wish to leave a review and/or rate the book?</u></button>
+                    </div>
+                    <div id="subs" style="display:none">                                               
+                        <form action="{{url_for('addAndEdit_review', name= name, isbn= book.getBookIsbn(), isReviewed= isReviewed)}}" method="POST">
+                        {{comment.rate.label}}: {{comment.rate(class="form-control", style='width: 30%')}}<br>                          
+                        Type in your review(maximum 1200 characters):<br>            
+                        {{comment.comment(class = " form-control commentSpace", id = "commentSpace", style="width:90%", rows="10", maxlength="1200")}}<br>
+                        {% if isReviewed %}
+                            {{comment.submit(class = "btn submitComment")}} Your previous review will be replaced!
+                        {% else %}
+                            {{comment.submit(class = "btn submitComment")}}
+                        {% endif %}
+                    </form>
+                    </div>
+                    <section id="lower">
+                        {% if lgComment | length == 0 %}
+                            <div class="card text-center">
+                                
+                                <div class="card-body">
+                                  <h5 class="card-title">No review has been submitted yet.</h5>
+                                  <p class="card-text">Have you read this book? Be the first one to leave your review.</p>
+                                  <a onclick="myFunction('subs')" class="btn btn-primary">Review and Rate</a>
+                                </div>
+                        
+                            </div>
+                        
+                        {% elif lgComment | length > 0 %}    
+                            {% for review in lgComment %} 
+                            <div class="row comment_section" style="margin-bottom:10px; border-bottom:slategrey solid 1px">
+                                <div class="col-3">
+                                    {% set img_path = 'profile_photos/' + review['profilepic_file'] %}
+                                    <img src="{{url_for('static', filename= img_path)}}" class="img img-rounded img-fluid" style="border-radius:50%;"/>
+                                    <p class="text-secondary text-center">{{review['date']}}</p>
+                                    
+                                </div>
+                                <div class="col-9">        
+                                    <ul class="reviewTitle">
+                                        <li><strong>{{review['name']}}</strong></li>
+                                        <li class="menu">
+                                            <div class="dropdown show">
+                                                <a href="#" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                                <h3>. . .</h3>
+                                                </a>
+                                      
+                                                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                                                    {% if review['id'] == owner_id %}
+                                                        {% set body = review['body'] %}
+                                                        <a class="dropdown-item" href="{{url_for('delete_review', index= loop.index0, isbn= book.getBookIsbn() )}}">Delete review</a>                                          
+                                                        <a class="dropdown-item" href="#commentSpace" onclick="myFunction('subs');">Edit review</a>
+                                                        
+                                                    
+                                                    {% else %}
+                                                        <a class="dropdown-item disabled" disabled=disabled> Delete Review</a>                                          
+                                                        <a class="dropdown-item disabled" disabled=disabled>Edit review</a>
+                                                
+                                                    {% endif %}
+                                                    
+                                                </div>
+                                            </div>
+                                        </li>
+                                    </ul>
+                                    <div style="margin-left: 40px">                               
+                                    {% if review['body']| length > 500 %}
+                                        <p>{{review['body'][:500]}}
+                                            <button id = "showMore_{{ loop.index0 }}" style="border:none; color:dodgerblue" onclick="myFunction('{{ loop.index0}}', 'showMore_{{ loop.index0 }}')">Read more</button>                   
+                                            <span id ="{{ loop.index0 }}" style="display:none">{{review['body'][500:]}} <button style="border:none; color:dodgerblue" onclick="myFunction('{{ loop.index0 }}', 'showMore_{{ loop.index0 }}')">show less</button></span>
+                                        </p>
+                                    {% else %}
+                                                                                
+                                        <p> {{review['body']}} </p>
+                           
+                                    {% endif %}
+                                    </div> 
+                                    <a class="float-right btn btn-outline-primary ml-2"> Rated: {{review['rate']}}/5</a>
+                                    
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% endif %}    
+                </section>
+                </div>
+                
+                    
+                      {% endblock %}
+                
+

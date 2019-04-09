@@ -1,0 +1,60 @@
+    
+{% extends 'layout.html' %}
+    {% block content %}
+    <form id="search-engine" class = 'search-engine' action="{{url_for('matching_books')}}" methods= 'GET' >
+            <div row>
+                <div class="col-12" style="padding-top:9px">
+                    <div class="input-group">
+                    {{form.books(class="form-control", placeholder="Author/Book/ISBN")}}
+                        <span class="input-group-btn" style="padding-left:2px; width:50%">
+                            
+                            {{form.search(class="btn btn-default")}}
+                        </span>
+                    </div>
+                </div>
+            </div>
+        </form>
+    <div class="envelop" style="width:100%; padding-top:15px">
+        <div class="sides" style="display: flex; justify-content:space-between">
+            <div class="sideBar" style="height: 300px; width:35%; position: -webkit-sticky; position:sticky; top:10px;">
+                <div class="card" style="width: 100%; margin-right:2px; border:none">
+                <ul class="sideBarItems">
+                    <li><img src="{{profilePic_file}}" class="img img-rounded img-fluid" width="50%"/></li>
+                    <li style="font-weight:600">{{name}}</li>
+                    <li><a href="#">Personal information</a></li>
+                    <li>Email : <br>{{email}}</li>                                        
+                    <li>Country: {{country}}</li>                    
+                    <li><ul><a href="#">Activities</a><br>
+                    <li>Number of Reviews: {{numreviews}}</li> 
+                    </ul></li>
+                </ul>
+                </div>
+            </div>
+            <div class="container matches0">
+                <div class="row" >
+                    {% if books|length == 0 %}
+                        <h1> No results were found for {{search_query}} </h1>
+                    {% endif %}
+
+                    {% for book in books %}
+                        <div class="col-sm col-md cards"style="margin-top: 5px; margin-bottom: 5px;">
+                            {% set book_token = book.getBookIsbn() %}
+                            <form action="{{url_for('chosen_book', book_token=book.getBookIsbn())}}" method="POST">
+                                <input name='index' type="hidden" value="{{book.getBookIsbn()}}">             
+                                <div class="card matching-cards">
+                                    <div class="card-body matching-card-body">
+                                        <h5 class="card-title">{{book.getBookName()}}</h5>
+                                        <h6 class="card-subtitle mb-2 text-muted">by {{book.getBookAuthor()}}</h6>
+                                        <p class="card-text"><ul><li>ISBN: {{book.getBookIsbn()}}</li><li> Year of release: {{book.getReleaseYear()}}</li></ul></p>
+                                        <input type="submit" class="card-link" value='Visit the book' style="border:none; color:dodgerblue; background-color: white">
+                                        
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>     
+        </div>
+        </div>    
+    {% endblock %}

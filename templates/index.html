@@ -1,0 +1,10 @@
+{% extends 'layout.html' %}
+{% block content %}
+        <div id="welcome"> Welcome! Register to search for books, read and leave reviews, and rate books. 
+                  Log in if you already have an account.
+        </div>
+        <div id="indexButtons">
+            <a href="{{url_for('registration')}}"><button class="indexButton register"> Register</button></a>
+            <a href="{{url_for('login')}}"><button class="indexButton login"> Log in</button></a>
+        </div>
+{% endblock %}

@@ -1,0 +1,47 @@
+            
+            body{
+                margin: 0px 0px 0px 0px;
+            }
+            #logo{
+                font-family:sans-serif;
+                margin-top:0px;
+                color:azure;
+                padding:15px;
+            }
+            header{
+                background-color:#4289f4;                 
+                width:100%;
+                background-size: 100%;
+                
+            }
+            
+            @media (max-width: 700px){
+                section{
+                    border:dimgrey 1px solid;
+                    margin-right: auto;
+                    margin-left: auto;
+                    width:100%;
+                    padding:1em;
+                    margin-bottom: 35px;
+                }
+            }
+            @media (min-width: 701px){
+                section{
+                    border:dimgrey 1px solid;
+                    margin-right: auto;
+                    margin-left: auto;
+                    width:60%;
+                    padding:1em;
+                    margin-bottom: 35px;
+                }
+            }
+            input,select{
+                margin:0.5em;
+                padding:0.5em;
+            }
+            .birthDate li{
+                
+                display: inline-block;
+            }
+            
+            
