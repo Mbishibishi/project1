@@ -82,10 +82,12 @@ def review_helper(index, isbn):
                     
     elif index != '-1':
         row = db.execute("SELECT reviewsperid[:index] AS review, totalrates FROM reviews WHERE bookisbn = :token", { "index": int(index) + 1, "token": f'{isbn}'}).fetchone()#adding 1 on the index because json indices begin from 1 not 0      
+        if row is None:
+            return
         review = row.review
     totalrates = row.totalrates
         
-    if review['id'] == session['user_id']:
+    if review['id'] == session['user_id'] and review['id'] != None:
         ID = review['id']
         body = review['body']
         new = '' #this will replace the body(review text) after the for loop which escapes characters that may cause trouble.
@@ -266,7 +268,7 @@ def chosen_book(book_token):
                 if elt['isbn'] == book_token:
                     isReviewed = True
                     break
-            book = Book(bookName, bookAuthor, bookIsbn, releaseYear, bookImage=imageUrl, bookDescription=description, rating_counts=rating_counts, avg_rating=rating_counts)             
+            book = Book(bookName, bookAuthor, bookIsbn, releaseYear, bookImage=imageUrl, bookDescription=description, rating_counts=rating_counts, avg_rating=avg_rating)             
             return render_template('book.html', totalrates = totalrates, owner_id = session['user_id'], isReviewed = isReviewed, lgComment= reviews, form = SearchBook(), comment = CommentBox(),\
                 book = book, name = name, topTitle=book.getBookName())
         
@@ -274,7 +276,7 @@ def chosen_book(book_token):
 possible matches, returns a list of the found matches, if any, to the template. Otherwise returns an empty list to the template."""        
 
 
-@app.route("/search/book-matches", methods = ['POST', 'GET']) # I should be back to customise the url so that it contains individual token that can help in case some one copies the url and pastes it somewhere else.
+@app.route("/search/book-matches", methods = ['POST', 'GET'])
 @logged_in
 def matching_books():
     
@@ -381,7 +383,7 @@ def dashboard():
             profilePic_file = profile_picture(username, data)
             db.execute(f'UPDATE users SET profilepic_file = \'{profilePic_file}\'WHERE id={session["user_id"]}')
             db.commit()
-            flash('Profile picture successfully updated! you may need to reload the page in order to see it.', 'success')
+            flash('Profile picture successfully updated!', 'success')
             return redirect(url_for('dashboard')) 
 
     basic_infor = basic_info(int(session['user_id']))    
@@ -400,7 +402,7 @@ def dashboard():
             history.append((temp.title, temp.author, book_isbn, temp.year, date))
 
     
-    return render_template('dashboard.html', form=SearchBook(), update=Update(), history= history,numreviews = numreviews, name = name, email = email, country = country, profilePic_file=profilePic_file, topTitle=f'Dashboard/{name}' )
+    return render_template('dashboard.html', form=SearchBook(), update=Update(), history= history,numreviews = numreviews, name = name, email = email, country = country, profilePic_file=profilePic_file, topTitle=f'Dashboard | {name}' )
 
 """ deletes the user's row in the users table in the database and all their activities in the reviews table of the database, it uses
 the review_helper function to delete the the reviews. It also deletes the profile picture in the static folder in the profile_photos file."""
@@ -421,10 +423,12 @@ def delete_account():
        
     isbns_column = db.execute("SELECT bookisbn FROM reviews").fetchall()
     isbns = isbns_column[0]
+    # return str(isbns)
     for isbn in isbns:
         isbn_row = db.execute(\
             f"SELECT reviewsperid FROM reviews WHERE bookisbn=\'{isbn}\'").fetchone()
-        index = len(isbn_row.reviewsperid)-1 
+        index = len(isbn_row.reviewsperid)-1
+         
         while index > -1:
             review_helper(index, isbn)
             index -= 1       
@@ -450,8 +454,11 @@ def book_api(isbn):
         bookName, bookAuthor, bookIsbn, releaseYear = book.title, book.author, book.isbn, book.year
     reviews =  db.execute(\
             f"SELECT reviewsperid, totalrates FROM reviews WHERE bookisbn= :isbn", {"isbn": str(isbn)}).fetchone()
-    review_count = int(len(reviews.reviewsperid))
-    avg_rating = float(reviews.totalrates)/review_count
+    review_count=0
+    avg_rating=0.0
+    if reviews is not None:
+        review_count = int(len(reviews.reviewsperid))
+        avg_rating = float(reviews.totalrates)/review_count
     
     result = {
     "title": bookName,

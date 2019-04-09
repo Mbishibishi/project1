@@ -110,11 +110,11 @@ footer > div{
 
 .dropdown:hover .dropbtn {background-color: #3e8e41;}
 .search-engine{
-    /* width: 40%;  */
+    
     margin-bottom: 15px;
 }
 #userName{
-    /* background-color: maroon; */
+    
     width: 20%;
     margin-right:2px; 
     padding:10px;

@@ -1,10 +1,11 @@
 {% extends 'layout.html' %}
 {% block content %}
+    
 <form id="search-engine" class = 'search-engine' action="{{url_for('matching_books')}}" methods= 'GET' >
         <div row>
             <div class="col-12" style="padding-top:9px">
                 <div class="input-group">
-                {{form.books(class="form-control", placeholder="Author/Book/ISBN")}}
+                    {{form.books(class="form-control", placeholder="Author/Book/ISBN")}}
                     <span class="input-group-btn" style="padding-left:2px; width:50%">
                         
                         {{form.search(class="btn btn-default")}}
@@ -17,37 +18,38 @@
         <div class="sides">
             <div class="sideBarDash">
                 <div class="card" style="width: 100%; margin-right:2px; border:none">
-                <ul class="sideBarItems">
+                    <ul class="sideBarItems">
                    
-                    <li><img src="{{profilePic_file}}" class="img img-rounded img-fluid" id="dashPic"/></li>
+                        <li><img src="{{profilePic_file}}" class="img img-rounded img-fluid" id="dashPic"/></li>
                     
                 
-                    <li>
-                        <form method="POST" action="" enctype= "multipart/form-data">
-                            {{ update.hidden_tag() }}
-                            <a href="#">{{update.profile_picture.label()}}</a> <br>
-                            {{update.profile_picture(id="upload_profpic")}}<br>
-                            {% if update.profile_picture.errors %}
-                                {% for error in update.profile_picture.errors %}
-                                    <span class="text-danger">{{ error }}</span></br>
-                                {% endfor %}    
-                            {% endif%}<br>
-                            {{update.submit(style="border:none")}}
-                        </form>
-                    </li>
-                    <li class="inline-dash"><ul><a href="#">Personal information</a></li>
-                    <li>Username : {{name}}</li>
-                    <li>Email : <br>{{email}}</li>                                        
-                    <li>Country: {{country}}
-                        
-                    </li></ul>
+                        <li>
+                            <form method="POST" action="" enctype= "multipart/form-data">
+                                {{ update.hidden_tag() }}
+                                <a href="#">{{update.profile_picture.label()}}</a> <br>
+                                {{update.profile_picture(id="upload_profpic")}}<br>
+                                {% if update.profile_picture.errors %}
+                                    {% for error in update.profile_picture.errors %}
+                                        <span class="text-danger">{{ error }}</span></br>
+                                    {% endfor %}    
+                                {% endif%}<br>
+                                {{update.submit(style="border:none")}}
+                            </form>
+                        </li>
+                        <li class="inline-dash">
+                            <ul><a href="#">Personal information</a>
+                                <li>Username : {{name}}</li>
+                                <li>Email : <br>{{email}}</li>                                        
+                                <li>Country: {{country}}</li>
+                            </ul>
                                     
-                    <li class="inline-dash"><ul><a href="#">Activities</a><br> 
-                    <li>Number of Reviews: {{numreviews}}</li> 
-                    </ul></li>
-                    <li class="inline-dash"><a href="{{url_for('delete_account')}}">Delete account</a></li>                
-                
-                </ul>
+                        <li class="inline-dash">
+                            <ul><a href="#">Activities</a><br> 
+                                <li>Number of Reviews: {{numreviews}}</li>                     
+                                <li class="inline-dash"><a href="{{url_for('delete_account')}}">Delete account</a></li>                
+                            </ul>
+                        </li>
+                    </ul>
                 </div>
             </div>
             
@@ -59,9 +61,9 @@
                   Your review History
                 </div>
                 <div class="card-body"> 
-                  <h5 class="card-title">It looks like you have not left a review yet.</h5>
+                  <h5 class="card-title">It looks like you haven't reviewed a book yet.</h5>
                   <p class="card-text">Search for a book by isbn, author name or book title, and see what others have to say about it. If you choose to read it or have read it already, feel free to give your recommendation.</p>
-                  <a href="#search-engine" class="btn btn-primary">Search for a book</a> 
+                  
                 </div>
             </div>  
             {% else %}

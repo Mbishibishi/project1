@@ -21,7 +21,7 @@ class RegistrationForm(FlaskForm):
     email = StringField("Email", validators=[DataRequired(), Email()])
     password = PasswordField("Password(8-20 characters)", validators=[DataRequired(), Length(min=8, max= 20)])
     confirmPassword = PasswordField("Confirm Password", validators=[DataRequired(), EqualTo('password')])    
-    gender = RadioField("Gender", choices=[('male', 'Male'), ('female', 'Female')])
+    gender = RadioField("Gender", choices=[('male', 'Male'), ('female', 'Female')],validators=[DataRequired()])
     country = SelectField("Country", choices= country())
     submit = SubmitField("Create your Account")
 

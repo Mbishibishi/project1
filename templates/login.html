@@ -11,50 +11,50 @@
         </header>
         <div>
             {% with alerts = get_flashed_messages(with_categories=true) %}
-            {% if alerts %}
-                {% for categ, alert in alerts%}
-                    <div class="alert alert-{{ categ }}"> {{ alert }}</div>
-                {% endfor%}    
-            {% endif %}
-        {% endwith %}    
-      </div>
+                {% if alerts %}
+                    {% for categ, alert in alerts%}
+                        <div class="alert alert-{{ categ }}"> {{ alert }}</div>
+                    {% endfor%}    
+                {% endif %}
+            {% endwith %}    
+        </div>
         <section>
             <h2> Log in with your credentials.</h2>
             <div style=" color:darkgrey" ><a href="{{url_for('registration')}}">Sign up</a> if you don't have an account.</div>
-        <form action= "" method="POST"> 
+            <form action= "" method="POST"> 
                         
-                        {{ login_form.hidden_tag() }}
-                        {{login_form.email.label}}:<br>
+                {{ login_form.hidden_tag() }}
+                {{login_form.email.label}}:<br>
 
-                        {% if login_form.email.errors %}
-                            {{ login_form.email(class="form-control form-control-md is-invalid")}}
-                            <div class="invalid-feedback">
-                                {% for error in login_form.email.errors %}
-                                    <span> {{error}}</span>
-                                {% endfor%}
-                            </div>
-                        {% else %}
-                            {{login_form.email(class="form-control form-control-md")}}   
+                {% if login_form.email.errors %}
+                    {{ login_form.email(class="form-control form-control-md is-invalid")}}
+                    <div class="invalid-feedback">
+                        {% for error in login_form.email.errors %}
+                            <span> {{error}}</span>
+                        {% endfor%}
+                    </div>
+                {% else %}
+                    {{login_form.email(class="form-control form-control-md")}}   
 
-                        {% endif%}<br>
+                {% endif%}<br>
             
-                        {{login_form.password.label}}:<br> 
-                        {% if login_form.password.errors %}
-                            {{ login_form.password(class="form-control form-control-md is-invalid")}}
-                            <div class="invalid-feedback">
-                                {% for error in login_form.password.errors %}
-                                    <span> {{error}}</span>
-                                {% endfor%}
-                            </div>
-                        {% else %}
-                            {{login_form.password(class="form-control form-control-md")}}
-                        {% endif%}<br> 
+                {{login_form.password.label}}:<br> 
+                {% if login_form.password.errors %}
+                    {{ login_form.password(class="form-control form-control-md is-invalid")}}
+                    <div class="invalid-feedback">
+                        {% for error in login_form.password.errors %}
+                            <span> {{error}}</span>
+                        {% endfor%}
+                    </div>
+                {% else %}
+                    {{login_form.password(class="form-control form-control-md")}}
+                {% endif%}<br> 
                     
     
-                    <div class="modal-footer">
-                            {{login_form.submit(class="btn btn-danger")}}
-                    </div>
-                  </form>  
-                </section>
+                <div class="modal-footer">
+                    {{login_form.submit(class="btn btn-danger")}}
+                </div>
+            </form>  
+        </section>
     </body>
-    </html>
+</html>

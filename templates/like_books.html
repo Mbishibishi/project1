@@ -2,18 +2,18 @@
 {% extends 'layout.html' %}
     {% block content %}
     <form id="search-engine" class = 'search-engine' action="{{url_for('matching_books')}}" methods= 'GET' >
-            <div row>
-                <div class="col-12" style="padding-top:9px">
-                    <div class="input-group">
+        <div row>
+            <div class="col-12" style="padding-top:9px">
+                <div class="input-group">
                     {{form.books(class="form-control", placeholder="Author/Book/ISBN")}}
-                        <span class="input-group-btn" style="padding-left:2px; width:50%">
+                    <span class="input-group-btn" style="padding-left:2px; width:50%">
                             
-                            {{form.search(class="btn btn-default")}}
-                        </span>
-                    </div>
+                        {{form.search(class="btn btn-default")}}
+                    </span>
                 </div>
             </div>
-        </form>
+        </div>
+    </form>
     <div class="envelop" style="width:100%; padding-top:15px">
         <div class="sides" style="display: flex; justify-content:space-between">
             <div class="sideBar" style="height: 300px; width:35%; position: -webkit-sticky; position:sticky; top:10px;">
