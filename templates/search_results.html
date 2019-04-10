@@ -1,7 +1,7 @@
     
 {% extends 'layout.html' %}
     {% block content %}
-    <form id="search-engine" class = 'search-engine' action="{{url_for('matching_books')}}" methods= 'GET' >
+    <form id="search-engine" class = 'search-engine' action="{{url_for('search_results')}}" methods= 'GET' >
         <div row>
             <div class="col-12" style="padding-top:9px">
                 <div class="input-group">
@@ -21,10 +21,10 @@
                 <ul class="sideBarItems">
                     <li><img src="{{profilePic_file}}" class="img img-rounded img-fluid" width="50%"/></li>
                     <li style="font-weight:600">{{name}}</li>
-                    <li><a href="#">Personal information</a></li>
+                    <li><u class="subtitles">Personal information</u></li>
                     <li>Email : <br>{{email}}</li>                                        
                     <li>Country: {{country}}</li>                    
-                    <li><ul><a href="#">Activities</a><br>
+                    <li><ul><u class="subtitles">Activities</u><br>
                     <li>Number of Reviews: {{numreviews}}</li> 
                     </ul></li>
                 </ul>

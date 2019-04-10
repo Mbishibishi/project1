@@ -11,6 +11,7 @@ from PIL import Image
 import forms
 from forms import RegistrationForm, SearchBook, CommentBox, Sign_in, Update
 from book import Book
+from sqlalchemy.exc import IntegrityError
 app = Flask(__name__)
 
 # Check for environment variable
@@ -71,6 +72,7 @@ the row in which it was located in the database. This include the total number o
 def review_helper(index, isbn):
             
     review = {'id':None}
+    
     if index == '-1':
         row = db.execute("SELECT reviewsperid AS reviews, totalrates FROM reviews WHERE bookisbn = :token", {"token": f'{isbn}'}).fetchone() 
         if row is None:
@@ -85,8 +87,8 @@ def review_helper(index, isbn):
         if row is None:
             return
         review = row.review
-    totalrates = row.totalrates
         
+    totalrates = row.totalrates   
     if review['id'] == session['user_id'] and review['id'] != None:
         ID = review['id']
         body = review['body']
@@ -122,19 +124,7 @@ have logged in already. """
 def index():
     login_form = Sign_in()
     if 'user_id' in session and request.method == 'GET':
-        return redirect(url_for('dashboard'))
-
-    elif request.method == 'POST' and login_form.validate_on_submit():
-        session.clear()
-        email = request.form.get('email')
-        password = request.form.get('password')
-        userId = db.execute('SELECT id FROM users WHERE email = :email AND password = :password', {'email' : email, 'password': password}).fetchone()
-        if userId is not None:
-            session['user_id'] = userId[0]   
-            return redirect(url_for('dashboard'))
-        elif userId is None:
-            flash('No matching account has been found, try again.', 'danger')
-                
+        return redirect(url_for('dashboard'))                
     return render_template("index.html", topTitle='Home')  
 
 
@@ -166,7 +156,7 @@ def login():
             session['user_id'] = int(userId[0])
             return redirect(url_for("index"))
         elif userId is None:
-            flash('No matching account has been found, try again.', 'danger')
+            flash('No matching account has been found, check your spelling.', 'warning')
             return redirect(url_for("login"))
     return render_template('login.html', login_form = login_form)
 
@@ -217,9 +207,14 @@ def registration():
             filename = gender + '.png'            
             data = os.path.join(app.root_path, 'static/profile_photos/', filename)            
             profilePic_file = profile_picture(username, data)
-            db.execute(f'INSERT INTO users (email, password, country, username, gender, profilepic_file , booksreviewed)\
-                 VALUES (:email, :password, :country, :username, :gender, :profilepic_file, \'{{}}\'::jsonb[])',\
-                     {"email": email, "password": password, "country": country, "username": username, "gender": gender, "profilepic_file": profilePic_file })    
+            try:
+                db.execute(f'INSERT INTO users (email, password, country, username, gender, profilepic_file , booksreviewed)\
+                     VALUES (:email, :password, :country, :username, :gender, :profilepic_file, \'{{}}\'::jsonb[])',\
+                         {"email": email, "password": password, "country": country, "username": username, "gender": gender, "profilepic_file": profilePic_file })    
+            except IntegrityError: 
+                flash('account already created, you may choose to login instead', 'info')
+                return redirect(url_for('registration'))
+            
             db.commit()
             flash(f'Congratulations {username.capitalize()}! your account has been successfully created. You can now login with your credentials.', 'success')            
             return redirect(url_for('index'))    
@@ -276,16 +271,17 @@ def chosen_book(book_token):
 possible matches, returns a list of the found matches, if any, to the template. Otherwise returns an empty list to the template."""        
 
 
-@app.route("/search/book-matches", methods = ['POST', 'GET'])
+@app.route("/search_results", methods = ['POST', 'GET'])
 @logged_in
-def matching_books():
+def search_results():
     
     if request.method == 'GET':    
         book_token = str(request.args.get('books'))        
         if book_token:
+            book_token = re.sub(r"\s+", "", book_token) 
             rows = db.execute(\
                 "SELECT title, author, isbn, year FROM books\
-                    WHERE title LIKE :token OR author LIKE :token OR isbn LIKE :token", {"token": f'%{book_token}%'}).fetchall()               
+                    WHERE LOWER(title) LIKE LOWER(:token) OR LOWER(author) LIKE LOWER(:token) OR LOWER(isbn) LIKE LOWER(:token)", {"token": f'%{book_token}%'}).fetchall()               
             
             matching_books = []
             for row in rows:
@@ -298,7 +294,7 @@ def matching_books():
             numreviews = basic_infor[0]       
             profilePic_file = url_for('static', filename='profile_photos/' + basic_infor[1])
             
-            return render_template('like_books.html', books = matching_books, form= SearchBook(), search_query= f'<{book_token}>',numreviews = numreviews, profilePic_file = profilePic_file, name = name, email = email, country = country, topTitle='Search results' )
+            return render_template('search_results.html', books = matching_books, form= SearchBook(), search_query= f'<{book_token}>',numreviews = numreviews, profilePic_file = profilePic_file, name = name, email = email, country = country, topTitle='Search results' )
             
 """ Takes the username(string), book'isbn(string) and a boolean isReviewed, which is True when the user
 has already reviewed the book, and False otherwise. Then makes sure that the previous review, if any, is deleted,
@@ -307,7 +303,7 @@ then update the reviews table and the user's review history in the database. Fin
 @app.route("/add_and_edit/<string:name>/<string:isbn>/<string:isReviewed>", methods = ['POST'])
 @logged_in
 def addAndEdit_review(name, isbn, isReviewed):
-    # db.begin(subtransactions=True)
+    
     user_detail = db.execute(\
             "SELECT profilepic_file FROM users\
                 WHERE id=:user_id", {"user_id": session['user_id']}).fetchone()
@@ -402,7 +398,7 @@ def dashboard():
             history.append((temp.title, temp.author, book_isbn, temp.year, date))
 
     
-    return render_template('dashboard.html', form=SearchBook(), update=Update(), history= history,numreviews = numreviews, name = name, email = email, country = country, profilePic_file=profilePic_file, topTitle=f'Dashboard | {name}' )
+    return render_template('dashboard.html', form=SearchBook(), update=Update(), history= history,numreviews = numreviews, name = name, email = email, country = country, profilePic_file=profilePic_file, topTitle=f'Dashboard - {name}' )
 
 """ deletes the user's row in the users table in the database and all their activities in the reviews table of the database, it uses
 the review_helper function to delete the the reviews. It also deletes the profile picture in the static folder in the profile_photos file."""
@@ -416,26 +412,31 @@ def about():
 @app.route("/delete_account", methods = ['POST', 'GET'])
 @logged_in
 def delete_account():
+    
     profilePic = db.execute(\
             "SELECT profilepic_file FROM users\
                 WHERE id=:user_id", {"user_id": session['user_id']}).fetchone()
     pic = profilePic.profilepic_file
-       
+    
     isbns_column = db.execute("SELECT bookisbn FROM reviews").fetchall()
-    isbns = isbns_column[0]
-    # return str(isbns)
-    for isbn in isbns:
-        isbn_row = db.execute(\
-            f"SELECT reviewsperid FROM reviews WHERE bookisbn=\'{isbn}\'").fetchone()
-        index = len(isbn_row.reviewsperid)-1
-         
-        while index > -1:
-            review_helper(index, isbn)
-            index -= 1       
-    os.remove('static/profile_photos/' + pic)        
+    if len(isbns_column) > 0: 
+          
+        for isbn in isbns_column:
+            isbn_row = db.execute(\
+                f"SELECT reviewsperid FROM reviews WHERE bookisbn=\'{isbn[0]}\'").fetchone()
+            index = len(isbn_row.reviewsperid)-1
+            while index > -1:
+                review_helper(index, isbn[0])               
+                index -= 1
+    try:                               
+        os.remove('static/profile_photos/' + pic)
+    except Exception:
+        pass
     db.execute(f"DELETE FROM users WHERE id = {session['user_id']}")
+    session.pop('user_id')
     db.commit()
-    return redirect(url_for('logout'))        
+    flash('account successfully deleted', 'info')
+    return redirect(url_for('index'))        
            
 
 

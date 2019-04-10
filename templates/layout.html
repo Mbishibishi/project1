@@ -63,13 +63,13 @@
                 </header>
                     <div>
                         {% with alerts = get_flashed_messages(with_categories=true) %}
-                        {% if alerts %}
-                            {% for categ, alert in alerts%}
-                                <div class="alert alert-{{ categ }}"> {{ alert }}</div>
-                            {% endfor%}    
-                        {% endif %}
-                    {% endwith %}    
-                  </div>
+                            {% if alerts %}
+                                {% for categ, alert in alerts%}
+                                    <div class="alert alert-{{ categ }}"> {{ alert }}</div>
+                                {% endfor%}    
+                            {% endif %}
+                        {% endwith %}    
+                    </div>
                 
                {% block content %}
                 {% endblock %}

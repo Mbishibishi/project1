@@ -1,7 +1,7 @@
 {% extends 'layout.html' %}
 {% block content %}
     
-<form id="search-engine" class = 'search-engine' action="{{url_for('matching_books')}}" methods= 'GET' >
+<form id="search-engine" class = 'search-engine' action="{{url_for('search_results')}}" methods= 'GET' >
         <div row>
             <div class="col-12" style="padding-top:9px">
                 <div class="input-group">
@@ -26,7 +26,7 @@
                         <li>
                             <form method="POST" action="" enctype= "multipart/form-data">
                                 {{ update.hidden_tag() }}
-                                <a href="#">{{update.profile_picture.label()}}</a> <br>
+                                <u class="subtitles">{{update.profile_picture.label()}}</u> <br>
                                 {{update.profile_picture(id="upload_profpic")}}<br>
                                 {% if update.profile_picture.errors %}
                                     {% for error in update.profile_picture.errors %}
@@ -37,14 +37,14 @@
                             </form>
                         </li>
                         <li class="inline-dash">
-                            <ul><a href="#">Personal information</a>
+                            <ul><u class="subtitles">Personal information</u>
                                 <li>Username : {{name}}</li>
                                 <li>Email : <br>{{email}}</li>                                        
                                 <li>Country: {{country}}</li>
                             </ul>
                                     
                         <li class="inline-dash">
-                            <ul><a href="#">Activities</a><br> 
+                            <ul><u class="subtitles">Activities</u><br> 
                                 <li>Number of Reviews: {{numreviews}}</li>                     
                                 <li class="inline-dash"><a href="{{url_for('delete_account')}}">Delete account</a></li>                
                             </ul>

@@ -13,7 +13,8 @@ About the files:
 2.3) import.py contains the code that uploads books from books.csv to the database.
 
 
-3) layout.html is the parent template from which other templates(except registration.hmtl and login.hmtl) inherit the header, footer and head links such as bootstrap and css, index.html is the homepage, about.html is the about page, book.html is the bookpage, login.html and registration.html are the login and registration pages respectively, dashboard.hmlt is the dashboard page, like_books.html is the page where the search results are displayed after the user has searched for a book with a token.
+3) the hmtl pages are the templates, each according to its name. 
+for example: dashboard.hmtl being th dashboard page, etc.
 
 
 4) The static folder:
@@ -37,4 +38,9 @@ a jsonb array which contains the reviewer id, review text, the date the review w
 Initial it is [] when the user has not reviewed any book yet.
 
 3) Whenever there is a variable 'name', it refers to the username.
+
 4) The dates are stored in the database and displayed in the templates as strings.
+
+5) The app also uses goodreads api to get the description and cover image of the books through an xml response. I was only able to do it by following the instructions in the goodreads api page.
+
+6) In the video I uploaded the app seems to be so slow because 1) the video  recorder is heavy and my computer has a small processor, 2) there is also the effect of the vpn I use to access Goodreads api because currently Goodreads is blocked in china, where I am now.
