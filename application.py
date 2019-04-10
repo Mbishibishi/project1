@@ -309,7 +309,7 @@ def addAndEdit_review(name, isbn, isReviewed):
                 WHERE id=:user_id", {"user_id": session['user_id']}).fetchone()
     profilePic_file = user_detail.profilepic_file
     if isReviewed:        
-        review_helper('-1', isbn)       
+        review_helper('-1', isbn) # '-1' is a signal to the review_helper function that this is deleting a previous review which must replaced.            
     for book in basic_info(session['user_id'])[5]:
         if str(book['isbn']) == isbn:
             return redirect(url_for('chosen_book', book_token=isbn))
