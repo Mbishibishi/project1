@@ -22,6 +22,14 @@ engine = create_engine(os.getenv("DATABASE_URL"))
 db = scoped_session(sessionmaker(bind=engine))
 
 def main():
+    
+    db.execute('CREATE TABLE users(id SERIAL PRIMARY KEY, password character varying(20), username character varying(15) UNIQUE, gender text, email text UNIQUE, country text, booksreviewed jsonb[], profilepic_file text);')
+
+    db.execute('CREATE TABLE reviews(bookisbn character varying UNIQUE, reviewsperid jsonb[], totalrates integer);')
+
+    db.execute('CREATE TABLE books(isbn character varying UNIQUE,title character varying, author character varying, year integer);')
+
+
    
     f = open("books.csv")
     reader = csv.reader(f)
